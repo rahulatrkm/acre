@@ -1090,10 +1090,23 @@ function menuSheet() {
     G.sound = !G.sound; save(); menuSheet();
   });
   $("sheetPane").querySelector("[data-reset]").addEventListener("click", () => {
-    if (!confirm("Delete this farm and start again?")) return;
-    localStorage.removeItem(SAVE); G = freshState(); closeSheet(); build(); save();
+    // Not confirm(). A browser that suppresses dialogs returns false from it,
+    // and then this button silently does nothing at all with no explanation.
+    resetSheet();
   });
   $("sheetPane").querySelector("[data-close]").addEventListener("click", closeSheet);
+}
+function resetSheet() {
+  sheet(`<h2>Delete this farm?</h2>
+    <p class="lede">Level ${G.lvl}, ${fmt(G.earned)} coins earned all time and every plot, animal and
+      workshop you have built will be erased from this device. There is no copy anywhere else and this
+      cannot be undone.</p>
+    <button class="btn wide" data-back="1">Keep my farm</button>
+    <button class="btn wide flat" data-really="1">Delete it and start again</button>`);
+  $("sheetPane").querySelector("[data-back]").addEventListener("click", menuSheet);
+  $("sheetPane").querySelector("[data-really]").addEventListener("click", () => {
+    localStorage.removeItem(SAVE); G = freshState(); closeSheet(); build(); save();
+  });
 }
 function awaySheet(info) {
   sheet(`<h2>While you were away</h2>
